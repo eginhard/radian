@@ -5338,48 +5338,50 @@ This is passed to `set-frame-font'."
 ;; The menu bar appears in both graphical and tty frames. Kill it.
 (menu-bar-mode -1)
 
-(when (display-graphic-p)
+(setq inhibit-x-resources t)
+;; (when (display-graphic-p)
 
-  ;; Disable unnecessary graphical elements.
-  (when (fboundp 'scroll-bar-mode)
-    (scroll-bar-mode -1))
+;; Disable unnecessary graphical elements.
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
   (tool-bar-mode -1)
 
-  (radian-with-operating-system macOS
+(radian-with-operating-system macOS
 
-    (radian-defhook radian--disable-menu-bar-again-on-macos (_)
-      after-make-frame-functions
-      "Disable the menu bar again, because macOS is dumb.
+  (radian-defhook radian--disable-menu-bar-again-on-macos (_)
+    after-make-frame-functions
+    "Disable the menu bar again, because macOS is dumb.
 On macOS, for some reason you can't disable the menu bar once it
 appears, and also `menu-bar-mode' doesn't prevent the menu bar
 from appearing when run during early init. So we do a hack and
 turn it off again after creating the first frame."
-      (menu-bar-mode -1)))
+    (menu-bar-mode -1)))
 
-  ;; Prevent the cursor from blinking. Do it two ways: using the minor
-  ;; mode only works during regular init, while using the variable
-  ;; only works during early init.
-  (blink-cursor-mode -1)
-  (setq no-blinking-cursor t)
+;; Prevent the cursor from blinking. Do it two ways: using the minor
+;; mode only works during regular init, while using the variable
+;; only works during early init.
+(blink-cursor-mode -1)
+(setq no-blinking-cursor t)
 
-  ;; Set the default font size.
-  (when radian-font-size
-    (set-face-attribute 'default nil :height radian-font-size))
+;; Set the default font size.
+(when radian-font-size
+  (set-face-attribute 'default nil :height radian-font-size))
 
-  ;; Set the default font. No, I have no idea why we have to do it
-  ;; this way. Using `set-face-attribute' does not have an effect,
-  ;; unlike with the font size.
-  (when radian-font
-    (add-to-list 'default-frame-alist `(font . ,radian-font)))
+;; Set the default font. No, I have no idea why we have to do it
+;; this way. Using `set-face-attribute' does not have an effect,
+;; unlike with the font size.
+(when radian-font
+  (add-to-list 'default-frame-alist `(font . ,radian-font)))
 
-  ;; Use the same font for fixed-pitch text as the rest of Emacs (you
-  ;; *are* using a monospace font, right?).
-  (set-face-attribute 'fixed-pitch nil :family 'unspecified)
+;; Use the same font for fixed-pitch text as the rest of Emacs (you
+;; *are* using a monospace font, right?).
+(set-face-attribute 'fixed-pitch nil :family 'unspecified)
 
-  ;; On macOS, set the title bar to match the frame background.
-  (radian-with-operating-system macOS
-    (add-to-list 'default-frame-alist '(ns-appearance . dark))
-    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))))
+;; On macOS, set the title bar to match the frame background.
+(radian-with-operating-system macOS
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
+;; )
 
 ;;;; Mode line
 

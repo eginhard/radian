@@ -25,6 +25,12 @@
   (advice-add #'display-graphic-p :around
               #'radian--advice-fix-display-graphic-p)
 
+  (defun true-color-p ()
+    "Return non-nil on displays that support 256 colors."
+    (or
+     (display-graphic-p)
+     (= (tty-display-color-cells) 16777216)))
+
   (defun radian--advice-fix-xw-display-color-p (func &optional display)
     "Fix `xw-display-color-p' so it works while loading the early init-file."
     (if (or display after-init-time)
@@ -34,6 +40,13 @@
 
   (advice-add #'xw-display-color-p :around
               #'radian--advice-fix-xw-display-color-p)
+  (message "Early init")
+  (message "%s" (display-graphic-p))
+  (message "%s" initial-window-system)
+  (message "%s" window-system)
+  (message "%s" (xw-display-color-p))
+  (message "%s" (true-color-p))
+  (message "%d" (tty-display-color-cells))
 
   (defun radian--advice-disable-x-resource-application ()
     "Disable `x-apply-session-resources'.
